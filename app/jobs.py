@@ -5,54 +5,42 @@ from app import db
 from flask import g
 import requests
 
-def update_price(app, data, service_id):
+def update_prices(app):
     with app.app_context():
         g.db = db
         row = CRUD("services")
-        discount_code = CRUD("discount").first()
 
-        current_price_result = row.get_by_column("id", service_id)
-        current_price = current_price_result.get("data") if current_price_result else None
+        null_prices_service = row.get_by_column("price", 0)
 
-        if current_price is None:
-            print(f"No service found with id {service_id}")
+        if not null_prices_service or not null_prices_service.get("data"):
+            print("⚠️ No service found with price 0")
             return
 
-        discount_value = None
-        if discount_code:
-            discount_data = discount_code.get("data") if discount_code else None
-            if discount_data:
-                discount_value = discount_data.get("value")
+        service_data = null_prices_service.get("data")
+        service_id = service_data.get("id")
+        service_name = service_data.get("service")
 
+        if not service_id:
+            print("❌ Service ID missing in data")
+            return
+
+        # Example: You may call an external API to get price
         try:
-            current_price_float = float(current_price.get("price", 0))
-            new_price_float = float(data)
-        except (TypeError, ValueError):
-            print(f"Invalid price data for service id {service_id}")
-            return
+            response = requests.post(
+                "https://example.com/get-price",
+                json={"id": service_id},
+                timeout=10
+            )
+            response.raise_for_status()
+            result = response.json()
 
-        if current_price_float != new_price_float:
-            if discount_value:
-                try:
-                    discount_float = float(discount_value)
-                    discount_price = new_price_float * (1 - discount_float / 100)
-                except (TypeError, ValueError):
-                    discount_price = new_price_float
+            new_price = result.get("price")
+            if new_price is not None:
+                update_price(app, new_price, service_id)
             else:
-                discount_price = new_price_float
-
-            row.update(
-                service_id,
-                price=discount_price,
-                updated_at=datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
-            )
-            print(f"Price updated for {current_price.get('service')}")
-        else:
-            row.update(
-                service_id,
-                updated_at=datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
-            )
-            print(f"Price not updated for {current_price.get('service')}")
+                print(f"⚠️ Price not found in response for service {service_name}")
+        except Exception as e:
+            print(f"❌ Error fetching price for service {service_name}: {e}")
 
 # make logs
 def make_logs(app, data):
@@ -129,41 +117,64 @@ def update_prices(app):
             make_logs(app, "I hope you have no null prices service")
 
 
-# update discout
 def update_discount(app):
     with app.app_context():
         g.db = db
-        update_discount = CRUD("discount").first()
-        model = CRUD("services")
-        discount_code = model.notwhere_single(
-            discount=update_discount.get("data").get("value")
-        )
-        if discount_code.get("status") == "success":
-            if discount_code.get("data").get("discount") != update_discount.get(
-                "data"
-            ).get("value"):
-                discount_price = float(discount_code.get("data").get("price")) * (
-                    1 - float(update_discount.get("data").get("value")) / 100
+
+        # Fetch the current discount
+        discount_record = CRUD("discount").first()
+        if not discount_record or not discount_record.get("data"):
+            make_logs(app, "⚠️ No discount found.")
+            return
+
+        discount_value = discount_record["data"].get("value")
+        if discount_value is None:
+            make_logs(app, "⚠️ Discount value is missing.")
+            return
+
+        # Fetch service that doesn't already have this discount
+        service_model = CRUD("services")
+        discount_code = service_model.notwhere_single(discount=discount_value)
+
+        if not discount_code or discount_code.get("status") != "success" or not discount_code.get("data"):
+            make_logs(app, "ℹ️ No matching service found for discount update.")
+            return
+
+        service_data = discount_code["data"]
+        service_id = service_data.get("id")
+        service_name = service_data.get("serviceName")
+        current_discount = service_data.get("discount")
+        price = service_data.get("price")
+        discount_status = service_data.get("discount_status")
+
+        if price is None or service_id is None:
+            make_logs(app, f"⚠️ Invalid service data for {service_name or 'unknown service'}.")
+            return
+
+        if current_discount != discount_value:
+            try:
+                discount_price = float(price) * (1 - float(discount_value) / 100)
+            except (TypeError, ValueError):
+                make_logs(app, f"❌ Failed to calculate discount price for {service_name}.")
+                return
+
+            if discount_status == "on":
+                service_model.update(
+                    service_id,
+                    discount=discount_value,
+                    selling_price=discount_price,
                 )
-                if discount_code.get("discount_status") == "on":
-                    model.update(
-                        discount_code.get("data").get("id"),
-                        discount=update_discount.get("data").get("value"),
-                        selling_price=discount_price,
-                    )
-                    make_logs(
-                        app,
-                        f"Discount code updated for {discount_code.get('data').get('serviceName')} to {update_discount.get('data').get('value')}",
-                    )
-                else:
-                    make_logs(
-                        app,
-                        f"Auto discount code {discount_code.get('data').get('serviceName')} is off",
-                    )
+                make_logs(
+                    app,
+                    f"✅ Discount code updated for {service_name} to {discount_value}%",
+                )
             else:
                 make_logs(
                     app,
-                    f"Discount code not updated for {discount_code.get('data').get('serviceName')}",
+                    f"⚠️ Auto discount is OFF for {service_name}.",
                 )
         else:
-            make_logs(app, "I hope you have no discount code")
+            make_logs(
+                app,
+                f"ℹ️ Discount already applied to {service_name}, no update needed.",
+            )
