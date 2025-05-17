@@ -1,0 +1,51 @@
+{% extends "admin/layout.html" %}
+
+<!-- page title -->
+{% block title %}Settings{% endblock %} {%block content %}
+
+<!-- data table -->
+<div class="bg-white p-5 rounded-md overflow-x-auto">
+    <!-- page header -->
+    {% from '/admin/components/page_header.html' import header %} {{
+    header("Settings") }}
+    <div class="">
+        <div class="mb-3">{%include 'partials/alert.html'%}</div>
+        <!-- tab button -->
+        <div class="flex items-center flex-wrap gap-2 mb-10">
+            <a href="{{url_for('admin.settings', tab='smtp')}}"
+                class="w-fit text-center py-2 px-3 {% if request.args.get('tab') == 'smtp' %}bg-primary text-white {% else %}bg-gray-100 text-gray-500 {% endif %} text-sm rounded-sm">Smtp</a>
+            <a href="{{url_for('admin.settings', tab='payment')}}"
+                class="w-fit text-center py-2 px-3 {% if request.args.get('tab') == 'payment' %}bg-primary text-white {% else %}bg-gray-100 text-gray-500 {% endif %} text-sm rounded-sm">Payment</a>
+            <a href="{{url_for('admin.settings', tab='discount')}}"
+                class="w-fit text-center py-2 px-3 {% if request.args.get('tab') == 'discount' %}bg-primary text-white {% else %}bg-gray-100 text-gray-500 {% endif %} text-sm rounded-sm">Discount</a>
+            <a href="{{url_for('admin.settings', tab='seo')}}"
+                class="w-fit text-center py-2 px-3 {% if request.args.get('tab') == 'seo' %}bg-primary text-white {% else %}bg-gray-100 text-gray-500 {% endif %} text-sm rounded-sm">Seo</a>
+            <a href="{{url_for('admin.settings', tab='identity')}}"
+                class="w-fit text-center py-2 px-3 {% if request.args.get('tab') == 'identity' %}bg-primary text-white {% else %}bg-gray-100 text-gray-500 {% endif %} text-sm rounded-sm">Identity</a>
+            <a href="{{url_for('admin.settings', tab='user_payment')}}"
+                class="w-fit text-center py-2 px-3 {% if request.args.get('tab') == 'user_payment' %}bg-primary text-white {% else %}bg-gray-100 text-gray-500 {% endif %} text-sm rounded-sm">User Payment</a>
+            <a href="{{url_for('admin.settings', tab='logs')}}"
+                class="w-fit text-center py-2 px-3 {% if request.args.get('tab') == 'logs' %}bg-primary text-white {% else %}bg-gray-100 text-gray-500 {% endif %} text-sm rounded-sm">Logs</a>
+        </div>
+
+        <!-- tab content -->
+        <div class="mt-5">
+            {% if request.args.get('tab') == 'smtp' %}
+            {% include 'admin/setting/smtp.html' %}
+            {% elif request.args.get('tab') == 'payment' %}
+            {% include 'admin/setting/payment.html' %}
+            {% elif request.args.get('tab') == 'discount' %}
+            {% include 'admin/setting/discount.html' %}
+            {% elif request.args.get('tab') == 'seo' %}
+            {% include 'admin/setting/seo.html' %}
+            {% elif request.args.get('tab') == 'identity' %}
+            {% include 'admin/setting/identity.html' %}
+            {% elif request.args.get('tab') == 'user_payment' %}
+            {% include 'admin/setting/user_payment.html' %}
+            {% elif request.args.get('tab') == 'logs' %}
+            {% include 'admin/setting/logs.html' %}
+            {% endif %}
+        </div>
+    </div>
+</div>
+{%endblock%}

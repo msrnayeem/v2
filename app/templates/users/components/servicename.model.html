@@ -1,0 +1,84 @@
+<div
+  id="service_name_model"
+  class="fixed pointer-events-none opacity-0 duration-300 inset-0 z-[999] w-full h-screen bg-dark/20 backdrop-blur-md flex items-center justify-center"
+>
+  <div
+    id="model_body"
+    class="bg-white duration-300 scale-50 opacity-0 pointer-events-none rounded-md p-5 border border-gray-100 w-[90%] md:w-[500px]"
+  >
+    <header
+      class="flex items-center justify-between border-b border-gray-200 pb-5"
+    >
+      <h1 class="text-dark text-lg font-semibold">Enter service name</h1>
+      <button onclick="modelhandler('service_name_model')" class="btn">
+        <i class="ri-close-large-fill"></i>
+      </button>
+    </header>
+
+    <div class="mt-5">
+      <div>
+        <label class="text-sm text-gray-500 font-semibold">Service name</label>
+        <input
+          id="sevice_new_name"
+          type="text"
+          class="custome-input h-[38px]"
+        />
+      </div>
+      <div class="flex items-center justify-between gap-3">
+        <button
+          id="servicenamecancel"
+          onclick="modelhandler('service_name_model', null, resetservicenamemodel())"
+          class="btn bg-red-500 mt-3 justify-center hover:bg-red-500/80 w-full"
+        >
+          Cancel
+        </button>
+        <button
+          id="servicecontinuebtn"
+          data-name="false"
+          data-cancel="#servicenamecancel"
+          onclick="createverification(this)"
+          class="btn mt-3 justify-center w-full hidden"
+        >
+          Continue
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+{%block page_script%}
+<script>
+  const servicecontinuebtn = document.getElementById("servicecontinuebtn");
+  const sevice_new_name = document.getElementById("sevice_new_name");
+  function setdata(data) {
+    servicecontinuebtn.setAttribute("data-id", data);
+  }
+
+  //
+  sevice_new_name.addEventListener("keyup", function () {
+    if (this.value.length > 1) {
+      servicecontinuebtn.classList.remove("hidden");
+      servicecontinuebtn.setAttribute("data-service", this.value);
+    } else {
+      servicecontinuebtn.classList.add("hidden");
+    }
+  });
+
+  function resetservicenamemodel() {
+    servicecontinuebtn.removeAttribute("data-id");
+    sevice_new_name.value = "";
+    document.getElementById("servicenamecancel").classList.remove("hidden");
+    const server_data = JSON.parse(localStorage.getItem("server_key")) || {};
+    if (server_data) {
+      if (!server_data.defualt) {
+        localStorage.setItem(
+          "server_key",
+          JSON.stringify({
+            defualt: false,
+            server_id: null,
+          })
+        );
+      }
+    }
+  }
+</script>
+{%endblock%}

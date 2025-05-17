@@ -1,0 +1,181 @@
+<div class="grid grid-cols-1 md:grid-cols-2 gap-4 border border-gray-200 p-4 rounded-md relative pt-7">
+    <div class="absolute -top-3 left-2 bg-white py-1 px-2 rounded-sm">
+        <p class="text-sm text-gray-500">Payment settings</p>
+    </div>
+    <!-- stripe -->
+    <div class="border border-gray-200 p-4 rounded-md">
+        <div class="flex items-center justify-between">
+            <h1 class="flex items-center gap-2 text-lg font-medium"><i class="ri-visa-line"></i> stripe <a
+                    href="https://dashboard.stripe.com/test/settings/account"
+                    class="text-sm w-5 h-5 flex items-center justify-center bg-primary text-white rounded-full"
+                    target="_blank"><i class="ri-arrow-right-up-line"></i></a></h1>
+            <div class="flex items-center">
+                <a href="{{ url_for('admin.setting_status', type='stripe', status='on') }}" class="text-sm px-4 py-1 flex items-center
+                    {% if data.get('stripe', {}).get('data', {}).get('status', 'off') == 'on' %}
+                        border border-primary bg-primary text-white
+                    {% else %}
+                        border border-gray-300 text-dark
+                    {% endif %}">
+                    ON
+                </a>
+                <a href="{{ url_for('admin.setting_status', type='stripe', status='off') }}" class="text-sm px-4 py-1 flex items-center
+                    {% if data.get('stripe', {}).get('data', {}).get('status', 'off') == 'off' %}
+                        border border-red-500 bg-red-500 text-white
+                    {% else %}
+                        border border-gray-300 text-dark
+                    {% endif %}">
+                    OFF
+                </a>
+            </div>
+        </div>
+
+        <form action="{{url_for('admin.setting_stripe')}}" class="mt-5 space-y-3 border-t border-gray-200 pt-5"
+            method="post">
+            <div class="space-y-2">
+                <label class="text-sm font-medium text-gray-600">Button label</label>
+                <input type="text" name="stripe_btn_label"
+                    class="w-full px-4 py-3 rounded-lg border border-gray-200 focus:ring-2 focus:ring-indigo-200 focus:border-indigo-400 transition-all duration-300 outline-none bg-white"
+                    placeholder="Enter your button label"
+                    value="{{data.get('stripe', {}).get('data', {}).get('btn_label', '')}}" />
+            </div>
+            <div class="space-y-2">
+                <label class="text-sm font-medium text-gray-600">Secret key</label>
+                <input type="text" name="stripe_secret_key"
+                    class="w-full px-4 py-3 rounded-lg border border-gray-200 focus:ring-2 focus:ring-indigo-200 focus:border-indigo-400 transition-all duration-300 outline-none bg-white"
+                    placeholder="Enter your secret key"
+                    value="{{data.get('stripe', {}).get('data', {}).get('secret_key', '')}}" />
+            </div>
+            <div class="space-y-2">
+                <label class="text-sm font-medium text-gray-600">Public key</label>
+                <input type="text" name="stripe_public_key"
+                    class="w-full px-4 py-3 rounded-lg border border-gray-200 focus:ring-2 focus:ring-indigo-200 focus:border-indigo-400 transition-all duration-300 outline-none bg-white"
+                    placeholder="Enter your public key"
+                    value="{{data.get('stripe', {}).get('data', {}).get('publishable_key', '')}}" />
+            </div>
+            <button type="submit"
+                class="w-fit px-4 py-2 rounded-lg border border-gray-200 focus:ring-2 focus:ring-indigo-200 focus:border-indigo-400 transition-all duration-300 outline-none bg-primary text-white">Save</button>
+        </form>
+    </div>
+
+
+    <!-- paypal -->
+    <div class="border border-gray-200 p-4 rounded-md">
+        <div class="flex items-center justify-between">
+            <h1 class="flex items-center gap-2 text-lg font-medium"><i class="ri-paypal-line"></i> paypal <a
+                    href="https://developer.paypal.com/dashboard/applications"
+                    class="text-sm w-5 h-5 flex items-center justify-center bg-primary text-white rounded-full"
+                    target="_blank"><i class="ri-arrow-right-up-line"></i></a></h1>
+            <div class="flex items-center">
+                <a href="{{ url_for('admin.setting_status', type='paypal', status='on') }}" class="text-sm px-4 py-1 flex items-center
+                    {% if data.get('paypal', {}).get('data', {}).get('status', 'off') == 'on' %}
+                        border border-primary bg-primary text-white
+                    {% else %}
+                        border border-gray-300 text-dark
+                    {% endif %}">
+                    ON
+                </a>
+                <a href="{{ url_for('admin.setting_status', type='paypal', status='off') }}" class="text-sm px-4 py-1 flex items-center
+                    {% if data.get('paypal', {}).get('data', {}).get('status', 'off') == 'off' %}
+                        border border-red-500 bg-red-500 text-white
+                    {% else %}
+                        border border-gray-300 text-dark
+                    {% endif %}">
+                    OFF
+                </a>
+            </div>
+        </div>
+
+        <form action="{{url_for('admin.setting_paypal')}}" class="mt-5 space-y-3 border-t border-gray-200 pt-5"
+            method="post">
+            <div class="space-y-2">
+                <label class="text-sm font-medium text-gray-600">Button label</label>
+                <input type="text" name="paypal_btn_label"
+                    class="w-full px-4 py-3 rounded-lg border border-gray-200 focus:ring-2 focus:ring-indigo-200 focus:border-indigo-400 transition-all duration-300 outline-none bg-white"
+                    placeholder="Enter your button label"
+                    value="{{data.get('paypal', {}).get('data', {}).get('btn_label', '')}}" />
+            </div>
+            <div class="space-y-2">
+                <label class="text-sm font-medium text-gray-600">Secret key</label>
+                <input type="text" name="paypal_secret_key"
+                    class="w-full px-4 py-3 rounded-lg border border-gray-200 focus:ring-2 focus:ring-indigo-200 focus:border-indigo-400 transition-all duration-300 outline-none bg-white"
+                    placeholder="Enter your secret key"
+                    value="{{data.get('paypal', {}).get('data', {}).get('secret_key', '')}}" />
+            </div>
+            <div class="space-y-2">
+                <label class="text-sm font-medium text-gray-600">Client ID</label>
+                <input type="text" name="paypal_client_id"
+                    class="w-full px-4 py-3 rounded-lg border border-gray-200 focus:ring-2 focus:ring-indigo-200 focus:border-indigo-400 transition-all duration-300 outline-none bg-white"
+                    placeholder="Enter your client id"
+                    value="{{data.get('paypal', {}).get('data', {}).get('client_id', '')}}" />
+            </div>
+            <button type="submit"
+                class="w-fit px-4 py-2 rounded-lg border border-gray-200 focus:ring-2 focus:ring-indigo-200 focus:border-indigo-400 transition-all duration-300 outline-none bg-primary text-white">Save</button>
+        </form>
+    </div>
+
+
+    <!-- crypto -->
+    <div class="border border-gray-200 p-4 rounded-md">
+        <div class="flex items-center justify-between">
+            <h1 class="flex items-center gap-2 text-lg font-medium"><i class="ri-bit-coin-line"></i> crypto</h1>
+            <div class="flex items-center">
+                <a href="{{ url_for('admin.setting_status', type='crypto', status='on') }}" class="text-sm px-4 py-1 flex items-center
+                    {% if data.get('crypto', {}).get('data', {}).get('status', 'off') == 'on' %}
+                        border border-primary bg-primary text-white
+                    {% else %}
+                        border border-gray-300 text-dark
+                    {% endif %}">
+                    ON
+                </a>
+                <a href="{{ url_for('admin.setting_status', type='crypto', status='off') }}" class="text-sm px-4 py-1 flex items-center
+                    {% if data.get('crypto', {}).get('data', {}).get('status', 'off') == 'off' %}
+                        border border-red-500 bg-red-500 text-white
+                    {% else %}
+                        border border-gray-300 text-dark
+                    {% endif %}">
+                    OFF
+                </a>
+            </div>
+        </div>
+
+        <form action="{{url_for('admin.setting_crypto')}}" class="mt-5 space-y-3 border-t border-gray-200 pt-5"
+            method="post">
+            <div class="space-y-2">
+                <label class="text-sm font-medium text-gray-600">API key</label>
+                <input type="text" name="crypto_api_key"
+                    class="w-full px-4 py-3 rounded-lg border border-gray-200 focus:ring-2 focus:ring-indigo-200 focus:border-indigo-400 transition-all duration-300 outline-none bg-white"
+                    placeholder="Enter your api key"
+                    value="{{data.get('crypto', {}).get('data', {}).get('api_key', '')}}" />
+            </div>
+            <button type="submit"
+                class="w-fit px-4 py-2 rounded-lg border border-gray-200 focus:ring-2 focus:ring-indigo-200 focus:border-indigo-400 transition-all duration-300 outline-none bg-primary text-white">Save</button>
+        </form>
+    </div>
+</div>
+
+
+<!-- coin  -->
+<div class="mt-7 p-5 rounded-md border border-gray-200 relative pt-7">
+    <div class="absolute -top-3 left-2 bg-white py-1 px-2 rounded-sm">
+        <p class="text-sm text-gray-500">Amount step</p>
+    </div>
+    <ul class="flex items-center flex-wrap gap-2">
+        {% if data.get('amount_step', {}).get('data', {}) %}
+        {% for amount in data.get('amount_step', {}).get('data', {}) %}
+        <li>
+            <a href="{{ url_for('admin.setting_amount_step_delete', id=amount.get('id')) }}"
+                class="flex items-center gap-2 bg-gray-100 px-2 py-1 text-sm text-dark duration-300 hover:text-red-500 rounded-sm">
+                <span>${{ amount.get('amount') }}</span>
+                <i class="ri-delete-bin-line mb-1"></i>
+            </a>
+        </li>
+        {% endfor %}
+        {% endif %}
+        <li>
+            <form action="{{ url_for('admin.setting_amount_step') }}" method="post">
+                <input type="number" step="0.1" class="px-2 py-1 outline-none focus:outline-none focus:ring-0"
+                    placeholder="Enter amount" name="amount">
+            </form>
+        </li>
+    </ul>
+</div>

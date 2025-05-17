@@ -1,0 +1,181 @@
+{% extends "layout.html" %} {%block title%}New account{%endblock%}
+{% block body %}
+<div
+  class="min-h-screen py-10 flex items-center justify-center bg-gradient-to-br from-indigo-100 via-white to-indigo-200 relative overflow-hidden">
+  <div class="container flex items-center justify-center">
+    <!-- Decorative background shapes -->
+    <div class="absolute -top-32 -left-32 w-96 h-96 bg-indigo-200 opacity-30 rounded-full blur-3xl"></div>
+    <div class="absolute -bottom-32 -right-32 w-96 h-96 bg-purple-200 opacity-30 rounded-full blur-3xl"></div>
+    <div class="absolute top-1/4 left-1/2 w-40 h-40 bg-pink-100 opacity-20 rounded-full blur-2xl -translate-x-1/2">
+    </div>
+
+    <!-- Signup Card -->
+    <div class="relative z-10 w-full max-w-md bg-white/90 backdrop-blur-md rounded-md shadow-md p-8 md:p-10">
+      <div class="flex flex-col items-center mb-8 border-b border-gray-200 pb-4">
+        <p class="text-center text-sm text-gray-500">
+          <a href="{{url_for('landing.dashboard')}}"
+            class="text-dark ml-1 transition-colors duration-200 uppercase text-lg mb-3 font-bold">Number<span
+              class="text-primary">sms</span></a>
+        </p>
+        <h1 class="text-2xl font-bold text-gray-900 mb-2">Create Your Account</h1>
+        <p class="text-gray-500 text-center">Join our community and start your journey today!</p>
+      </div>
+      <div class="space-y-6">
+        {%include 'partials/alert.html'%}
+        <!-- Full Name -->
+        <div class="space-y-2">
+          <label class="text-sm font-medium text-gray-600">Full Name<span class="text-red-400">*</span></label>
+          <input type="text" name="name"
+            class="w-full px-4 py-3 rounded-lg border border-gray-200 focus:ring-2 focus:ring-indigo-200 focus:border-indigo-400 transition-all duration-300 outline-none bg-white"
+            placeholder="Enter your full name" />
+        </div>
+        <!-- Email -->
+        <div class="space-y-2">
+          <label class="text-sm font-medium text-gray-600">Email Address<span class="text-red-400">*</span></label>
+          <input type="email" name="email"
+            class="w-full px-4 py-3 rounded-lg border border-gray-200 focus:ring-2 focus:ring-indigo-200 focus:border-indigo-400 transition-all duration-300 outline-none bg-white"
+            placeholder="Enter your email" required />
+        </div>
+        <!-- Password -->
+        <div class="space-y-2">
+          <label class="text-sm font-medium text-gray-600">Password<span class="text-red-400">*</span></label>
+          <input type="password" name="password"
+            class="w-full px-4 py-3 rounded-lg border border-gray-200 focus:ring-2 focus:ring-indigo-200 focus:border-indigo-400 transition-all duration-300 outline-none bg-white"
+            placeholder="Create a strong password" required />
+          <p class="text-xs text-gray-500 mt-1">Password must be at least 8 characters long</p>
+        </div>
+        <!-- Captcha -->
+        <div class="space-y-2">
+          <label class="text-sm font-medium text-gray-600">Captcha<span class="text-red-400">*</span></label>
+          <div class="flex items-center gap-4">
+            <img src="" alt="Captcha" id="captcha"
+              class="rounded-lg border border-gray-200 h-12 shadow-sm bg-white cursor-pointer hover:opacity-90 transition-opacity"
+              onclick="captchaRefresh()">
+            <input type="text" name="captcha"
+              class="w-full px-4 py-3 rounded-lg border border-gray-200 focus:ring-2 focus:ring-indigo-200 focus:border-indigo-400 transition-all duration-300 outline-none bg-white"
+              placeholder="Enter captcha" required />
+          </div>
+          <p class="text-xs text-gray-500 mt-1">Click on the image to refresh</p>
+        </div>
+        <!-- Create Account Button -->
+        <button onclick="signup(this)"
+          class="w-full py-3.5 px-6 rounded-lg bg-primary hover:bg-opacity-90 text-white font-medium text-base transition-all duration-300 flex items-center justify-center gap-2 shadow-lg">
+          <span>Create Account</span>
+        </button>
+      </div>
+      <p class="mt-8 text-center text-sm text-gray-500">
+        Already have an account?
+        <a href="{{url_for('landing.signin')}}"
+          class="text-indigo-600 font-medium hover:text-indigo-800 ml-1 transition-colors duration-200">Sign in</a>
+      </p>
+    </div>
+  </div>
+</div>
+<style>
+  .blur-2xl {
+    filter: blur(40px);
+  }
+
+  .blur-3xl {
+    filter: blur(80px);
+  }
+</style>
+{%endblock%}
+{%block page_script%}
+<script>
+  verifyJS({
+    totalDigit: 4,
+    number: true,
+    uppercase: true,
+    specialsCharacter: false,
+    width: 140,
+    height: 50,
+  }).vJSConfig();
+  window.onload = () => {
+    verifyJS().vJSImgSrc("#captcha");
+  };
+  function captchaRefresh() {
+    verifyJS().vJSImgRefreshSrc("#captcha");
+  }
+
+  // https request
+  async function signup(e) {
+    e.disabled = true;
+    e.setAttribute("oldText", e.innerHTML);
+    e.innerHTML = `<i class="ri-loader-2-line animate-spin"></i>`;
+    const url = "{{url_for('landing.signup')}}";
+    // validate name
+    const name = document.querySelector("input[name='name']");
+    if (name.value == "") {
+      name.classList.add("border-red-400");
+      toastr.error("Name is required");
+      e.disabled = false;
+      e.innerHTML = e.getAttribute("oldText");
+      return;
+    } else {
+      name.classList.remove("border-red-400");
+    }
+    // validate email
+    const email = document.querySelector("input[name='email']");
+    if (email.value == "") {
+      email.classList.add("border-red-400");
+      toastr.error("Email is required");
+      e.disabled = false;
+      e.innerHTML = e.getAttribute("oldText");
+      return;
+    } else {
+      email.classList.remove("border-red-400");
+    }
+    // validate password
+    const password = document.querySelector("input[name='password']");
+    if (password.value == "") {
+      password.classList.add("border-red-400");
+      toastr.error("Password is required");
+      e.disabled = false;
+      e.innerHTML = e.getAttribute("oldText");
+      return;
+    } else {
+      password.classList.remove("border-red-400");
+    }
+    // validate captcha
+    const captcha = document.querySelector("input[name='captcha']");
+    if (captcha.value == "") {
+      captcha.classList.add("border-red-400");
+      toastr.error("Captcha is required");
+      e.disabled = false;
+      e.innerHTML = e.getAttribute("oldText");
+      return;
+    } else {
+      let status = verifyJS().vJSCheck(captcha.value);
+      if (status) {
+        captcha.classList.remove("border-red-400");
+      } else {
+        captcha.classList.add("border-red-400");
+        toastr.error("Invalid captcha");
+        e.disabled = false;
+        e.innerHTML = e.getAttribute("oldText");
+        return;
+      }
+    }
+    // send request
+    const payload = {
+      name: document.querySelector("input[name='name']").value,
+      email: document.querySelector("input[name='email']").value,
+      password: document.querySelector("input[name='password']").value,
+    }
+    const response = await httpRequest(url, "POST", payload);
+    if (response.status == "success") {
+      toastr.success('Account created successfully. place wait redirecting...');
+      sessionStorage.setItem('message', response.message);
+      setTimeout(() => {
+        window.location.href = "{{url_for('landing.verify')}}";
+      }, 3000);
+    } else {
+      toastr.error(response.message);
+      e.disabled = false;
+      e.innerHTML = e.getAttribute("oldText");
+    }
+
+  }
+</script>
+{%endblock%}

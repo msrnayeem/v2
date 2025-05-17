@@ -1,0 +1,85 @@
+<div id="deposit_model"
+  class="fixed pointer-events-none opacity-0 duration-300 inset-0 z-[999] w-full h-screen bg-dark/20 backdrop-blur-md flex items-center justify-center">
+  <div id="model_body"
+    class="bg-white duration-300 scale-50 opacity-0 pointer-events-none rounded-md p-5 border border-gray-100 w-[90%] md:w-[500px] max-h-[90vh] overflow-y-auto custome-scrollbar">
+    <header class="flex items-start justify-between border-b border-gray-200 pb-5">
+      <div class="w-[80%]">
+        <h1 class="text-dark text-lg font-semibold">Deposit Funds</h1>
+        <p class="text-sm text-gray-500">
+          Securely deposit funds into your account by filling out the required
+          details below.
+        </p>
+      </div>
+      <button onclick="modelhandler('deposit_model')" class="btn">
+        <i class="ri-close-large-fill"></i>
+      </button>
+    </header>
+
+    <div class="mt-5">
+      <div>
+        <input type="text" id="amountfild" name="amountfild" class="custome-input" disabled value="0" />
+      </div>
+
+      <!-- amounts -->
+      <p class="mt-3 font-medium text-gray-700">Select an amount to deposit:</p>
+      <div class="grid grid-cols-3 gap-2 mt-2">
+        {% if get_amount_step() %}
+        {% for amount in get_amount_step() %}
+        <button id="amountsbtn" data-amount="{{ amount.get('amount') }}"
+          class="bg-gray-100 w-full text-dark rounded-md text-base font-semibold duration-300 hover:bg-primary hover:text-white h-[40px] flex items-center justify-center">
+          ${{ amount.get('amount') }}
+        </button>
+        {% endfor %}
+        {% endif %}
+      </div>
+
+      <!-- getweya -->
+      <p class="mt-3 font-medium text-gray-700">Select a payment gateway:</p>
+      <div class="grid grid-cols-3 gap-3 mt-2">
+        <!-- stripe -->
+        {% if get_stripe_data().get('status', 'off') == 'on' %}
+        {% if get_stripe_data().get('secret_key', '') != '' and
+        get_stripe_data().get('publishable_key', '') != '' %}
+        <button id="getway" data-active="true" data-type="stripe"
+          class="bg-gray-100 w-full text-dark rounded-md text-base font-semibold duration-300 hover:bg-primary hover:text-white h-[50px] flex items-center justify-center">
+          <i class="ri-bank-card-fill text-xl mr-2"></i> {{ get_stripe_data().get('btn_label', 'Card') }}
+        </button>
+        {% endif %}
+        {% endif %}
+        <!-- paypal -->
+        {% if get_paypal_data().get('status', 'off') == 'on' %}
+        {% if get_paypal_data().get('secret_key', '') != '' and
+        get_paypal_data().get('client_id', '') != '' %}
+        <button id="getway" data-active="false" data-type="paypal"
+          class="bg-gray-100 w-full text-dark rounded-md text-base font-semibold duration-300 hover:bg-primary hover:text-white h-[50px] flex items-center justify-center">
+          <i class="ri-paypal-fill text-xl mr-2"></i> {{ get_paypal_data().get('btn_label', 'Paypal') }}
+        </button>
+        {% endif %}
+        {% endif %}
+        <!-- crypto -->
+        {% if get_crypto_data().get('status', 'off') == 'on' %}
+        <button id="getway" data-active="false" data-type="crypto"
+          class="bg-gray-100 w-full text-dark rounded-md text-base font-semibold duration-300 hover:bg-primary hover:text-white h-[50px] flex items-center justify-center">
+          <i class="ri-bit-coin-fill text-xl mr-2 uppercase"></i>Crypto
+        </button>
+        {% endif %}
+      </div>
+
+      <!-- crypto currency -->
+      <div class="mt-3 hidden" id="selected_crypto_currency_div">
+        <div class="flex items-center justify-between gap-2">
+          <p class="font-medium text-gray-700">Selected Crypto Currency:</p>
+          <div class="flex items-center justify-center gap-2">
+            <span id="selected_crypto_currency" class="text-base font-bold text-dark"></span>
+            <button class="btn py-1 text-sm px-2" id="change_crypto_currency">Change</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- proccess deposit -->
+      <button class="btn mt-4 w-full justify-center" id="depositproccessbtn">
+        Next step
+      </button>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,73 @@
+<div id="crypto_model"
+    class="fixed pointer-events-none opacity-0 duration-300 inset-0 z-[999] w-full h-screen bg-dark/20 backdrop-blur-md flex items-center justify-center">
+    <div id="model_body"
+        class="bg-white duration-300 scale-50 opacity-0 pointer-events-none rounded-md p-5 border border-gray-100 w-[90%] md:w-[500px] max-h-[90vh] overflow-y-auto custome-scrollbar">
+        <header class="flex items-start justify-between border-b border-gray-200 pb-5">
+            <div class="w-[80%]">
+                <h1 class="text-dark text-lg font-semibold">Choice currency</h1>
+                <p class="text-sm text-gray-500">
+                    Choice currency to deposit funds into your account.
+                </p>
+            </div>
+            <button onclick="modelhandler('crypto_model')" class="btn">
+                <i class="ri-close-large-fill"></i>
+            </button>
+        </header>
+
+        <div class="mt-5">
+            <div>
+                <input type="text" id="search" class="custome-input" placeholder="Search currency" />
+            </div>
+            <div class="mt-3 grid grid-cols-3 gap-2 max-h-[250px] rounded-md overflow-y-auto custome-scrollbar">
+                {% for currency in crypto_currency %}
+                <button data-currency="{{ currency.get('code') }}" id="currency"
+                    class="bg-gray-100 w-full text-dark rounded-md text-sm font-medium duration-300 hover:bg-primary hover:text-white h-10 flex items-center justify-center gap-2">
+                    <img src="https://nowpayments.io/{{ currency.get('logo_url') }}" alt="{{ currency.get('code') }}"
+                        class="w-4 h-4">
+                    <span class="truncate max-w-[60px]">{{ currency.get('code') }}</span>
+                </button>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</div>
+
+{%block page_script%}
+<script>
+    // selected currency
+    let selectedCurrency = null;
+
+    // search
+    document.getElementById('search').addEventListener('input', function () {
+        var value = this.value.toLowerCase();
+        var buttons = document.querySelectorAll('#currency');
+        buttons.forEach(function (button) {
+            let code = button.getAttribute('data-currency');
+            if (code.toLowerCase().includes(value)) {
+                button.classList.remove('hidden');
+            } else {
+                button.classList.add('hidden');
+            }
+        });
+    });
+
+    // click currency
+    const currency = document.querySelectorAll('#currency');
+    currency.forEach(function (button) {
+        button.addEventListener('click', function () {
+            // remove
+            document.querySelectorAll('#currency').forEach(btn => {
+                btn.classList.remove('bg-primary', 'text-white');
+            });
+            // add
+            this.classList.add('bg-primary', 'text-white');
+            selectedCurrency = this.getAttribute('data-currency');
+            // select currency
+            document.getElementById('selected_crypto_currency_div').classList.remove('hidden');
+            document.getElementById('selected_crypto_currency').innerHTML = "[" + selectedCurrency + "]"
+            modelhandler('crypto_model')
+            modelhandler('deposit_model')
+        });
+    });
+</script>
+{%endblock%}

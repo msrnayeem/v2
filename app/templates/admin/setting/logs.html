@@ -1,0 +1,30 @@
+<div class="border border-gray-200 p-4 rounded-md w-full max-h-[500px] overflow-y-auto bg-black">
+    {% if data.get('logs', {}).get('data', {}) %}
+    {% for log in data.get('logs', {}).get('data', {}) %}
+    <div class="flex items-center justify-between py-2 border-b border-gray-700">
+        <div class="flex items-center gap-3">
+            <p class="text-sm text-green-300">{{ loop.index }}</p>
+            <p class="text-sm text-green-300">{{ log.get('text', '') }}</p>
+        </div>
+        <p class="text-sm text-gray-500">{{ log.get('created_at', '') }}</p>
+    </div>
+    {% endfor %}
+    {% else %}
+    <div class="flex items-center flex-col justify-center h-full py-3">
+        <i class="ri-close-circle-line text-gray-500 text-4xl"></i>
+        <p class="text-sm text-gray-500 text-center">No logs found</p>
+    </div>
+    {% endif %}
+</div>
+
+<div class="flex items-center mt-3 gap-2">
+    <a href="{{ url_for('admin.settings', tab='logs') }}"
+        class="bg-primary text-white px-4 py-1 flex items-center gap-2 rounded-md"><i class="ri-restart-line"></i> Load
+        More</a>
+    {% if data.get('logs', {}).get('data', {}) %}
+    <a href="{{ url_for('admin.setting_logs') }}"
+        class="bg-red-500 text-white px-4 py-1 flex items-center gap-2 rounded-md"><i
+            class="ri-delete-bin-2-line"></i>Clear
+        Logs</a>
+    {% endif %}
+</div>

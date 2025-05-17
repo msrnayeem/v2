@@ -1,0 +1,64 @@
+{% extends 'layout.html' %} {% block body %}
+<div
+  class="h-screen w-full flex items-center justify-center bg-bg p-4 relative z-[1]"
+>
+  <div
+    class="bg-white shadow-xl rounded-md p-8 md:p-12 w-full max-w-md text-center"
+  >
+    <div
+      class="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-green-100 mb-4"
+    >
+      <i class="ri-checkbox-circle-line text-green-500 text-4xl"></i>
+    </div>
+    <h3 class="text-2xl font-semibold text-gray-900">{{data['message']}}</h3>
+    <p class="text-gray-600 mb-4">Thank you for your deposit!</p>
+
+    <div class="border border-gray-300 bg-gray-50 rounded-lg p-4 w-full mb-3">
+      <div
+        class="flex items-center justify-between text-gray-950 text-base font-medium"
+      >
+        <span>Payment methods</span>
+        <span>{{data['methods']}}</span>
+      </div>
+      <div
+        class="flex items-center justify-between text-gray-950 text-base font-medium mt-2"
+      >
+        <span>Amount Paid</span>
+        <span>${{data['amount_total']}}</span>
+      </div>
+      <div
+        class="flex items-center justify-between text-gray-950 text-base font-medium mt-2"
+      >
+        <span>Currency</span>
+        <span>{{data['currency']}}</span>
+      </div>
+      {% if data['methods'] == 'Crypot' %}
+      <div
+        class="flex items-center justify-between text-gray-950 text-base font-medium mt-2"
+      >
+        <span>Receive currency</span>
+        <span>USD</span>
+      </div>
+      {%endif%}
+      <hr class="my-2" />
+      <div
+        class="flex items-center justify-between text-gray-950 text-base font-medium mt-2"
+      >
+        <span class="font-semibold">Total amount</span>
+        <span class="font-semibold">${{"{:.2f}".format(auth_data.get('data').get('coin'))}}</span>
+      </div>
+    </div>
+    <a href="{{url_for('user.creadits')}}">
+      <button
+        class="w-full py-3.5 px-6 rounded-lg bg-primary hover:bg-opacity-90 text-white font-medium text-base transition-all duration-300 flex items-center justify-center gap-2 shadow-lg"
+      >
+        Return to Back
+      </button>
+    </a>
+  </div>
+  <img
+    src="{{url_for('static', filename='media/404.svg')}}"
+    class="absolute w-full h-full object-cover inset-0 opacity-5 z-[-1]"
+  />
+</div>
+{% endblock %}

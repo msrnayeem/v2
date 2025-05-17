@@ -1,0 +1,15 @@
+<a href="/" class="flex items-center gap-x-2">
+  {% if get_identity_settings().get('logo_status', 'off') == 'on' %}
+  <img src="{{get_media(get_identity_settings().get('logo'))}}" alt="Logo"
+    class="w-auto h-[30px]">
+  {% else %}
+  <div class="flex flex-col justify-center gap-x-10">
+    <p class="text-white font-bold text-[16px] uppercase h-[16px] mt-[3px] flex items-center">
+      Number
+    </p>
+    <p class="text-white font-bold text-[16px] uppercase h-[16px] flex items-center">
+      sms
+    </p>
+  </div>
+  {% endif %}
+</a>

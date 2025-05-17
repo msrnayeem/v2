@@ -1,0 +1,144 @@
+<div class="grid grid-cols-1 md:grid-cols-2 gap-4 border border-gray-200 p-4 rounded-md relative pt-7">
+    <div class="absolute -top-3 left-2 bg-white py-1 px-2 rounded-sm">
+        <p class="text-sm text-gray-500">Payment settings</p>
+    </div>
+    <!-- deposit -->
+    <div class="border border-gray-200 p-4 rounded-md">
+        <div class="flex items-center justify-between">
+            <h1 class="flex items-center gap-2 text-lg font-medium">Deposit</h1>
+            <div class="flex items-center">
+                <a href="{{ url_for('admin.setting_status', type='deposit', status='on') }}" class="text-sm px-4 py-1 flex items-center
+                    {% if data.get('deposit', {}).get('data', {}).get('deposit', 'off') == 'on' %}
+                        border border-primary bg-primary text-white
+                    {% else %}
+                        border border-gray-300 text-dark
+                    {% endif %}">
+                    ON
+                </a>
+                <a href="{{ url_for('admin.setting_status', type='deposit', status='off') }}" class="text-sm px-4 py-1 flex items-center
+                    {% if data.get('deposit', {}).get('data', {}).get('deposit', 'off') == 'off' %}
+                        border border-red-500 bg-red-500 text-white
+                    {% else %}
+                        border border-gray-300 text-dark
+                    {% endif %}">
+                    OFF
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Coin share -->
+    <div class="border border-gray-200 p-4 rounded-md">
+        <div class="flex items-center justify-between">
+            <h1 class="flex items-center gap-2 text-lg font-medium">Coin share</h1>
+            <div class="flex items-center">
+                <a href="{{ url_for('admin.setting_status', type='coin_share', status='on') }}" class="text-sm px-4 py-1 flex items-center
+                    {% if data.get('deposit', {}).get('data', {}).get('coin_share', 'off') == 'on' %}
+                        border border-primary bg-primary text-white
+                    {% else %}
+                        border border-gray-300 text-dark
+                    {% endif %}">
+                    ON
+                </a>
+                <a href="{{ url_for('admin.setting_status', type='coin_share', status='off') }}" class="text-sm px-4 py-1 flex items-center
+                    {% if data.get('deposit', {}).get('data', {}).get('coin_share', 'off') == 'off' %}
+                        border border-red-500 bg-red-500 text-white
+                    {% else %}
+                        border border-gray-300 text-dark
+                    {% endif %}">
+                    OFF
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="flex items-center justify-between flex-col md:flex-row mt-7 mb-2">
+    <h1 class="text-sm font-medium text-gray-600">Users List</h1>
+    <input type="text" id="search"
+        class="w-full md:w-1/2 px-4 py-2 rounded-lg border border-gray-200 focus:ring-2 focus:ring-indigo-200 focus:border-indigo-400 transition-all duration-300 outline-none bg-white"
+        placeholder="Search">
+</div>
+<div class="border border-gray-200 p-4 rounded-md max-h-[400px] overflow-y-auto">
+    <table class="w-full">
+        <thead class="text-sm">
+            <tr class="bg-gray-100 text-left">
+                <th class="p-2">ID</th>
+                <th class="p-2">Name</th>
+                <th class="p-2">Email</th>
+                <th class="p-2">Deposit</th>
+                <th class="p-2">Coin Share</th>
+            </tr>
+        </thead>
+        <tbody class="text-sm">
+            {% for user in data.get('users', []).get('data', []) %}
+            <tr>
+                <td class="p-2 border-b border-gray-200">{{user.get('id')}}</td>
+                <td class="p-2 border-b border-gray-200">{{user.get('name')}}</td>
+                <td class="p-2 border-b border-gray-200">{{user.get('email')}}</td>
+                <td class="p-2 border-b border-gray-200">
+                    <div class="flex items-center">
+                        <a href="{{ url_for('admin.setting_status', type='user_deposit_status', status='on', id=user.get('id')) }}"
+                            class="text-sm px-4 py-1 flex items-center
+                            {% if user.get('deposit_status', 'off') == 'on' %}
+                                border border-primary bg-primary text-white
+                            {% else %}
+                                border border-gray-300 text-dark
+                            {% endif %}">
+                            ON
+                        </a>
+                        <a href="{{ url_for('admin.setting_status', type='user_deposit_status', status='off', id=user.get('id')) }}"
+                            class="text-sm px-4 py-1 flex items-center
+                            {% if user.get('deposit_status', 'off') == 'off' %}
+                                border border-red-500 bg-red-500 text-white
+                            {% else %}
+                                border border-gray-300 text-dark
+                            {% endif %}">
+                            OFF
+                        </a>
+                    </div>
+                </td>
+                <td class="p-2 border-b border-gray-200">
+                    <div class="flex items-center">
+                        <a href="{{ url_for('admin.setting_status', type='user_share_coin_status', status='on', id=user.get('id')) }}"
+                            class="text-sm px-4 py-1 flex items-center
+                            {% if user.get('share_coin_status', 'off') == 'on' %}
+                                border border-primary bg-primary text-white
+                            {% else %}
+                                border border-gray-300 text-dark
+                            {% endif %}">
+                            ON
+                        </a>
+                        <a href="{{ url_for('admin.setting_status', type='user_share_coin_status', status='off', id=user.get('id')) }}"
+                            class="text-sm px-4 py-1 flex items-center
+                            {% if user.get('share_coin_status', 'off') == 'off' %}
+                                border border-red-500 bg-red-500 text-white
+                            {% else %}
+                                border border-gray-300 text-dark
+                            {% endif %}">
+                            OFF
+                        </a>
+                    </div>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+{%block page_script%}
+<script>
+    document.getElementById('search').addEventListener('input', function () {
+        const search = this.value.toLowerCase();
+        const rows = document.querySelectorAll('tbody tr');
+        rows.forEach(row => {
+            const service = row.querySelector('td:first-child').textContent.toLowerCase();
+            if (service.includes(search)) {
+                row.style.display = 'table-row';
+            } else {
+                row.style.display = 'none';
+            }
+        });
+    });
+</script>
+{%endblock%}

@@ -1,0 +1,83 @@
+<div class="border border-gray-200 p-4 rounded-md">
+    <form action="{{url_for('admin.setting_discount')}}" method="post">
+        <div class="space-y-2">
+            <label class="text-sm font-medium text-gray-600">Discount Code<span class="text-red-400">*</span></label>
+            <input type="text" name="discount_code"
+                class="w-full px-4 py-3 rounded-lg border border-gray-200 focus:ring-2 focus:ring-indigo-200 focus:border-indigo-400 transition-all duration-300 outline-none bg-white"
+                placeholder="Enter your discount code"
+                value="{{ data.get('setting_discount', {}).get('data', {}).get('value', '') }}" />
+        </div>
+        <button type="submit"
+            class="w-fit mt-5 py-2 px-6 rounded-lg bg-primary hover:bg-opacity-90 text-white font-medium text-base transition-all duration-300 flex items-center justify-center gap-2 shadow-lg">
+            <span>Save</span>
+        </button>
+    </form>
+</div>
+
+<div class="flex items-center justify-between flex-col md:flex-row mt-7 mb-2">
+    <h1 class="text-sm font-medium text-gray-600">Services List</h1>
+    <input type="text" id="search"
+        class="w-full md:w-1/2 px-4 py-2 rounded-lg border border-gray-200 focus:ring-2 focus:ring-indigo-200 focus:border-indigo-400 transition-all duration-300 outline-none bg-white"
+        placeholder="Search">
+</div>
+<div class="border border-gray-200 p-4 rounded-md max-h-[400px] overflow-y-auto">
+    <table class="w-full">
+        <thead class="text-sm">
+            <tr class="bg-gray-100 text-left">
+                <th class="p-2">Service</th>
+                <th class="p-2">Price</th>
+                <th class="p-2">Selling Price</th>
+                <th class="p-2">Discount</th>
+                <th class="p-2">Status</th>
+            </tr>
+        </thead>
+        <tbody class="text-sm">
+            {% for service in data.get('services').get('data', []) %}
+            <tr>
+                <td class="p-2 border-b border-gray-200">{{service.get('service')}}</td>
+                <td class="p-2 border-b border-gray-200">${{service.get('price')}}</td>
+                <td class="p-2 border-b border-gray-200">${{service.get('selling_price')}}</td>
+                <td class="p-2 border-b border-gray-200">{{service.get('discount')}}%</td>
+                <td class="p-2 border-b border-gray-200">
+                    <div class="flex items-center">
+                        <a href="{{ url_for('admin.setting_status', type='discount', status='on', id=service.get('id')) }}"
+                            class="text-sm px-4 py-1 flex items-center
+                            {% if service.get('discount_status', 'off') == 'on' %}
+                                border border-primary bg-primary text-white
+                            {% else %}
+                                border border-gray-300 text-dark
+                            {% endif %}">
+                            ON
+                        </a>
+                        <a href="{{ url_for('admin.setting_status', type='discount', status='off', id=service.get('id')) }}"
+                            class="text-sm px-4 py-1 flex items-center
+                            {% if service.get('discount_status', 'off') == 'off' %}
+                                border border-red-500 bg-red-500 text-white
+                            {% else %}
+                                border border-gray-300 text-dark
+                            {% endif %}">
+                            OFF
+                        </a>
+                    </div>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{%block page_script%}
+<script>
+    document.getElementById('search').addEventListener('input', function () {
+        const search = this.value.toLowerCase();
+        const rows = document.querySelectorAll('tbody tr');
+        rows.forEach(row => {
+            const service = row.querySelector('td:first-child').textContent.toLowerCase();
+            if (service.includes(search)) {
+                row.style.display = 'table-row';
+            } else {
+                row.style.display = 'none';
+            }
+        });
+    });
+</script>
+{%endblock%}

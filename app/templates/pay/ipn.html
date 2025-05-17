@@ -1,0 +1,77 @@
+{% extends 'layout.html' %} {% block body %}
+<div class="min-h-screen w-full flex items-center justify-center bg-bg p-4 relative z-[1]">
+    <div class="bg-white shadow-xl rounded-md p-8 w-full max-w-md text-center">
+        <h2 class="text-xl font-semibold mb-2">Pay with {{data.get("pay_currency", '')}}</h2>
+        <p class="mb-4 text-gray-600 text-sm">
+            To complete this payment for <span class="font-semibold ">{{data.get("pay_currency", '')}}</span>, send the
+            amount due to
+            the <span class="font-semibold ">{{data.get("pay_currency", '')}}</span> address below.
+        </p>
+        <div class="flex flex-col items-center mb-4">
+            <!-- Replace the src with your QR code generator or static image -->
+            <img src="https://api.qrserver.com/v1/create-qr-code/?data={{data.get(" pay_address")}}&size=150x150"
+                alt="ETH QR Code" class="mb-2 w-28 h-28" />
+            <div class="text-xs text-gray-500 break-all mb-1">
+                {{data.get("pay_address", '')}}
+            </div>
+            <div class="text-xs text-gray-400 mb-2">
+                Please make sure to only send <span class="font-semibold">{{data.get("pay_amount", '')}}
+                    {{data.get("pay_currency", '')}}</span> to this address.
+            </div>
+        </div>
+
+        <div class="bg-gray-50 rounded-md p-4 text-left text-sm">
+            <div class="flex justify-between mb-2 border-b pb-2.5 border-gray-200">
+                <span>Amount due</span>
+                <div class="flex items-center gap-2">
+                    <span class="font-semibold">{{data.get("pay_amount", '')}}
+                        {{data.get("pay_currency", '')}}</span>
+                    <button onclick="copyToClipboard(this)" data-val="{{data.get(" pay_amount", '' )}}"
+                        class="text-primary hover:text-gray-700"><i class="ri-file-copy-line"></i></button>
+                </div>
+            </div>
+            <div class="flex justify-between mb-2 border-b pb-2.5 border-gray-200">
+                <span>ETH address</span>
+                <div class="flex items-center gap-2">
+                    <span class="font-mono">{{data.get("pay_address", '')[:6]}}...{{data.get("pay_address",
+                        '')[-6:]}}</span>
+                    <button onclick="copyToClipboard(this)" data-val="{{data.get(" pay_address", '' )}}"
+                        class="text-primary hover:text-gray-700"><i class="ri-file-copy-line"></i></button>
+                </div>
+            </div>
+            <div class="flex justify-between">
+                <span>Payment status</span>
+                <span class="text-red-500 font-semibold capitalize">{{data.get("payment_status", '')}}</span>
+            </div>
+        </div>
+
+        <a href="{{url_for('pay.ipn', order_id=data.get('payment_id', ''))}}">
+            <button class="bg-primary w-full mt-3 mb-3 text-white px-4 py-2 rounded-md">
+                <i class="ri-refresh-line"></i>
+                Complete payment
+            </button>
+        </a>
+        <a href="{{url_for('pay.cancel')}}" class="text-red-500 text-sm">
+            <i class="ri-close-circle-line"></i>
+            Cancel payment
+        </a>
+    </div>
+    <img src="{{url_for('static', filename='media/404.svg')}}"
+        class="absolute w-full h-full object-cover inset-0 opacity-5 z-[-1]" />
+</div>
+{% endblock %}
+
+{% block page_script %}
+<script>
+    function copyToClipboard(element) {
+        const text = element.getAttribute('data-val');
+        navigator.clipboard.writeText(text);
+        element.children[0].classList.remove('ri-file-copy-line');
+        element.children[0].classList.add('ri-checkbox-multiple-line');
+        setTimeout(() => {
+            element.children[0].classList.remove('ri-checkbox-multiple-line');
+            element.children[0].classList.add('ri-file-copy-line');
+        }, 2000);
+    }
+</script>
+{% endblock %}
