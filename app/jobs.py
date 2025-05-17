@@ -5,39 +5,54 @@ from app import db
 from flask import g
 import requests
 
-
-# update price
 def update_price(app, data, service_id):
     with app.app_context():
         g.db = db
         row = CRUD("services")
         discount_code = CRUD("discount").first()
-        current_price = row.get_by_column("id", service_id).get("data")
-        if float(current_price.get("price")) != float(data):
-            if discount_code.get("data").get("value"):
-                discount_price = float(data) * (
-                    1 - float(discount_code.get("data").get("value")) / 100
-                )
-                row.update(
-                    service_id,
-                    price=discount_price,
-                    updated_at=datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
-                )
-                print(f"Price updated for {current_price.get('service')}")
+
+        current_price_result = row.get_by_column("id", service_id)
+        current_price = current_price_result.get("data") if current_price_result else None
+
+        if current_price is None:
+            print(f"No service found with id {service_id}")
+            return
+
+        discount_value = None
+        if discount_code:
+            discount_data = discount_code.get("data") if discount_code else None
+            if discount_data:
+                discount_value = discount_data.get("value")
+
+        try:
+            current_price_float = float(current_price.get("price", 0))
+            new_price_float = float(data)
+        except (TypeError, ValueError):
+            print(f"Invalid price data for service id {service_id}")
+            return
+
+        if current_price_float != new_price_float:
+            if discount_value:
+                try:
+                    discount_float = float(discount_value)
+                    discount_price = new_price_float * (1 - discount_float / 100)
+                except (TypeError, ValueError):
+                    discount_price = new_price_float
             else:
-                row.update(
-                    service_id,
-                    price=float(data),
-                    updated_at=datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
-                )
-                print(f"Price updated for {current_price.get('service')}")
+                discount_price = new_price_float
+
+            row.update(
+                service_id,
+                price=discount_price,
+                updated_at=datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+            )
+            print(f"Price updated for {current_price.get('service')}")
         else:
             row.update(
                 service_id,
                 updated_at=datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
             )
             print(f"Price not updated for {current_price.get('service')}")
-
 
 # make logs
 def make_logs(app, data):
